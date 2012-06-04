@@ -1,5 +1,5 @@
 ## for initial test run
-    gcc -g -lm SplitBitMap.c -o programname
+    gcc -g -lm Bitmapper.c -o programname
         "-g" for gdb debugging "-lm" for pow function hack need to fix this
     ./programname
 
