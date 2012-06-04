@@ -4,16 +4,16 @@
 #include <math.h>
 #include "bit_bucket.c"
 
-typedef struct SplitBitMap{
+typedef struct Bitmapper{
     BitBucket** bkts;
     long long int bkt_count;
     long long int bkt_size;
     char fill_str[20];
-} SplitBitMap;
+} Bitmapper;
 
-SplitBitMap create_map(int index_count){
+Bitmapper create_map(int index_count){
     long long int size = pow(10, index_count),i;
-    SplitBitMap smap;
+    Bitmapper smap;
     smap.bkts = (BitBucket**)malloc(size*sizeof(BitBucket*));
     for(i=0;i<size; i++){
         smap.bkts[i] = NULL;
@@ -25,7 +25,7 @@ SplitBitMap create_map(int index_count){
     return smap;
 }
 
-void free_map(SplitBitMap smap){
+void free_map(Bitmapper smap){
     long long int i;
     for(i=0;i<smap.bkt_count; i++){
         if(smap.bkts[i]!=NULL) bit_bucket_free(smap.bkts[i]);
@@ -39,7 +39,7 @@ BitBucket* create_bucket_for(BitBucket* bkt, long long int size){
     return bkt;
 }
 
-int add_number(SplitBitMap smap,long long int num, long long int index){
+int add_number(Bitmapper smap,long long int num, long long int index){
 
     if(smap.bkts[index] == NULL){
         printf("adding num %llu:%llu", index, num);puts("");
@@ -52,7 +52,7 @@ int add_number(SplitBitMap smap,long long int num, long long int index){
     }
     return 0;
 }
-int remove_number(SplitBitMap smap,long long int num, long long int index){
+int remove_number(Bitmapper smap,long long int num, long long int index){
     if(smap.bkts[index] == NULL)
         return 0;
     if(bit_bucket_clear_bit(smap.bkts[index], num) != 0){
@@ -62,7 +62,7 @@ int remove_number(SplitBitMap smap,long long int num, long long int index){
     return 0;
 }
 
-int add_numbers_in_file(SplitBitMap map,FILE *in, long long int index_count){
+int add_numbers_in_file(Bitmapper map,FILE *in, long long int index_count){
     long long int num,i=0;
     char scan_str[20];
     char msisdn[15], index[index_count], rest_num[10-index_count];
@@ -76,7 +76,7 @@ int add_numbers_in_file(SplitBitMap map,FILE *in, long long int index_count){
 int remove_numbers_in_file(){
 
 }
-int dump_bucket_to_file(SplitBitMap map, long long int bkt_index, FILE* fp){
+int dump_bucket_to_file(Bitmapper map, long long int bkt_index, FILE* fp){
 
     if(map.bkt_count<=bkt_index) return 1;
     long long int i;
@@ -93,7 +93,7 @@ int dump_bucket_to_file(SplitBitMap map, long long int bkt_index, FILE* fp){
     return 0;
 }
 
-int dump_all_to_file(SplitBitMap map, FILE* fp){
+int dump_all_to_file(Bitmapper map, FILE* fp){
     long long int i;
     for(i=0;i<map.bkt_count;i++){
         dump_bucket_to_file(map, i, fp);
@@ -107,7 +107,7 @@ void init(){
 
     in = fopen("test/data/1-add.txt","r");
     out = fopen("/tmp/ncpr/out.txt","w");
-    SplitBitMap map = create_map(index_count);
+    Bitmapper map = create_map(index_count);
     add_numbers_in_file(map, in, index_count);
     dump_all_to_file(map, out);
 
