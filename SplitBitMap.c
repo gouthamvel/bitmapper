@@ -42,7 +42,7 @@ BitBucket* create_bucket_for(BitBucket* bkt, long long int size){
 int add_number(SplitBitMap smap,long long int num, long long int index){
 
     if(smap.bkts[index] == NULL){
-        /* printf("adding num %llu:%llu", index, num);puts(""); */
+        printf("adding num %llu:%llu", index, num);puts("");
         smap.bkts[index] = (BitBucket*)create_bucket_for(smap.bkts[index], smap.bkt_size);
     }
 
@@ -52,7 +52,30 @@ int add_number(SplitBitMap smap,long long int num, long long int index){
     }
     return 0;
 }
+int remove_number(SplitBitMap smap,long long int num, long long int index){
+    if(smap.bkts[index] == NULL)
+        return 0;
+    if(bit_bucket_clear_bit(smap.bkts[index], num) != 0){
+        puts("out of range");
+        return 1;/* ERROR out of range */
+    }
+    return 0;
+}
 
+int add_numbers_in_file(SplitBitMap map,FILE *in, long long int index_count){
+    long long int num,i=0;
+    char scan_str[20];
+    char msisdn[15], index[index_count], rest_num[10-index_count];
+    sprintf(scan_str, "%%%is%%%is\n",index_count, 10-index_count);
+    while(fgets(msisdn, 15, in)!=NULL){
+        sscanf(msisdn,scan_str, index, rest_num);
+        add_number(map, atoll(rest_num), atoll(index) );
+        i++;
+    }
+}
+int remove_numbers_in_file(){
+
+}
 int dump_bucket_to_file(SplitBitMap map, long long int bkt_index, FILE* fp){
 
     if(map.bkt_count<=bkt_index) return 1;
@@ -81,18 +104,11 @@ int dump_all_to_file(SplitBitMap map, FILE* fp){
 void init(){
     int index_count = 5;
     FILE *in, *out;
-    char msisdn[15],tmp[15], index[index_count], rest_num[10-index_count];
-    in = fopen("/home/goutham/Downloads/ncpr_dump_1852012_out/mini/1-add.txt","r");
+
+    in = fopen("test/data/1-add.txt","r");
     out = fopen("/tmp/ncpr/out.txt","w");
     SplitBitMap map = create_map(index_count);
-    long long int num,i=0;
-    char scan_str[20];
-    sprintf(scan_str, "%%%is%%%is\n",index_count, 10-index_count);
-    while(fgets(tmp, 15, in)!=NULL){
-        sscanf(tmp,scan_str, index, rest_num);
-        add_number(map, atoll(rest_num), atoll(index) );
-        i++;
-    }
+    add_numbers_in_file(map, in, index_count);
     dump_all_to_file(map, out);
 
     fclose(in);
