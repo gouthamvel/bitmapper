@@ -23,6 +23,7 @@ int bit_bucket_set_bit(BitBucket*,long long int);
 int bit_bucket_clear_bit(BitBucket*,long long int);
 unsigned bit_bucket_get_bit(BitBucket*,long long int);
 void bit_bucket_reset(BitBucket*);
+unsigned char* bit_bucket_string(BitBucket*);
 
 void _bit_bucket_set_bit_to(BitBucket* ptr,long long int byte_part, int bit_part, unsigned val){
     val = (val == 0) ? 0 : 1;
@@ -66,12 +67,14 @@ unsigned bit_bucket_get_bit(BitBucket* ptr,long long int num){
     case 7: return ptr->bucket[byte_part].f7;
     };
 }
+
 void bit_bucket_reset(BitBucket *ptr){
     long long int count = ptr->size/8+1, i;
     for(i=0;i<count;i++){
         ptr->bucket[i] = (ByteBits){0,0,0,0,0,0,0,0};
     }
 }
+
 BitBucket* bit_bucket_create(long long int size){
     long long int count = size/8 + 1;
     BitBucket *ptr = (BitBucket*)malloc(sizeof(BitBucket));
@@ -79,7 +82,35 @@ BitBucket* bit_bucket_create(long long int size){
     ptr->bucket = (ByteBits*)malloc(count*sizeof(ByteBits));
     return ptr;
 }
+long long int bit_bucket_size(BitBucket *ptr){
+    return ptr->size/8+1;
+}
+unsigned char* bit_bucket_string(BitBucket *ptr){
+    if(ptr == NULL){
+        printf("######### ERROR: ptr is returning null");
+        return (unsigned char*)"null";
+    }
+    long long int count = ptr->size/8+1, i;
+    unsigned char* raw = (unsigned char*)malloc(count);
+    memcpy(raw,ptr->bucket, count);
+    return raw;
+}
+/*
 
+ */
+int bit_bucket_load_byte(BitBucket* ptr,char *buf, long long int pos){
+    if(ptr == NULL){
+        printf("####### ERROR: ptr is returning null");
+        return 2;
+    }
+    long long int count = ptr->size/8+1, i;
+    if(count < pos) return 2;
+    memcpy(ptr->bucket+pos, buf, 1);
+    return 1;
+}
+
+/*
+ */
 void bit_bucket_free(BitBucket *ptr){
     free(ptr->bucket);
     free(ptr);
