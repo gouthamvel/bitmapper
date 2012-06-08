@@ -1,6 +1,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+/*
+   this is the bitfield which takes 1 byte(8-bits) of space in memory
+ */
 typedef struct ByteBits{
     unsigned char  f0:1;
     unsigned char  f1:1;
@@ -12,6 +15,10 @@ typedef struct ByteBits{
     unsigned char  f7:1;
 } ByteBits;
 
+/*
+   wrapper for sequence of ByteBits number of Bytebits will be
+   given_size(in bits)/8 + 1
+ */
 typedef struct BitBucket{
     ByteBits *bucket;
     long long int size;         /* size in bits as given */
@@ -24,6 +31,8 @@ int bit_bucket_clear_bit(BitBucket*,long long int);
 unsigned bit_bucket_get_bit(BitBucket*,long long int);
 void bit_bucket_reset(BitBucket*);
 unsigned char* bit_bucket_string(BitBucket*);
+long long int bit_bucket_size(BitBucket*);
+int bit_bucket_load_byte(BitBucket* ,char *, long long int );
 
 void _bit_bucket_set_bit_to(BitBucket* ptr,long long int byte_part, int bit_part, unsigned val){
     val = (val == 0) ? 0 : 1;
@@ -39,13 +48,25 @@ void _bit_bucket_set_bit_to(BitBucket* ptr,long long int byte_part, int bit_part
     };
 }
 
+/*
+  sets the of given bit location to 1
+  @param BitBucket* pointer to the bit bucket to use, users
+  responsablity to ensure pointer is valid
+  @param num the bit location
+*/
 int bit_bucket_set_bit(BitBucket* ptr,long long int num){
     if(num > ptr->size) return 1;
     long long int byte_part=num/8, bit_part=num%8;
-    _bit_bucket_set_bit_to(ptr, byte_part, bit_part, 1);
+    bit_bucket_set_bit_to(ptr, byte_part, bit_part, 1);
     return 0;
 }
 
+/*
+  clears the state of given bit location to 0
+  @param BitBucket* pointer to the bit bucket to use, users
+  responsablity to ensure pointer is valid
+  @param num the bit location
+*/
 int bit_bucket_clear_bit(BitBucket* ptr,long long int num){
     if(num > ptr->size) return 1;
     long long int byte_part=num/8, bit_part=num%8;
@@ -53,6 +74,12 @@ int bit_bucket_clear_bit(BitBucket* ptr,long long int num){
     return 0;
 }
 
+/*
+  returns the current state of given bit location
+  @param BitBucket* pointer to the bit bucket to use, users
+  responsablity to ensure pointer is valid
+  @param num the bit location
+ */
 unsigned bit_bucket_get_bit(BitBucket* ptr,long long int num){
     if(num > ptr->size) return 2;
     long long int byte_part=num/8, bit_part=num%8;
@@ -68,6 +95,11 @@ unsigned bit_bucket_get_bit(BitBucket* ptr,long long int num){
     };
 }
 
+/*
+  Resets the given BitBucket*
+  @param BitBucket* pointer to the bit bucket to use, users
+  responsablity to ensure pointer is valid
+ */
 void bit_bucket_reset(BitBucket *ptr){
     long long int count = ptr->size/8+1, i;
     for(i=0;i<count;i++){
@@ -75,16 +107,34 @@ void bit_bucket_reset(BitBucket *ptr){
     }
 }
 
+/*
+   Creates BitBucket with the given size and allocates the requried
+   memory. A reset on all bits is done after creating the memory.
+   @param long long size Number of bits you want to allocate.
+ */
 BitBucket* bit_bucket_create(long long int size){
     long long int count = size/8 + 1;
     BitBucket *ptr = (BitBucket*)malloc(sizeof(BitBucket));
     ptr->size = size;
     ptr->bucket = (ByteBits*)malloc(count*sizeof(ByteBits));
+    bit_bucket_reset(ptr);
     return ptr;
 }
+
+/*
+   gives the size of the BitBucket in bytes
+   @param BitBucket* pointer to the bit bucket to use, users
+   responsablity to ensure pointer is valid
+ */
 long long int bit_bucket_size(BitBucket *ptr){
     return ptr->size/8+1;
 }
+
+/*
+  gives the string representation of BitBucket
+  @param BitBucket* pointer to the bit bucket to use, users
+  responsablity to ensure pointer is valid
+ */
 unsigned char* bit_bucket_string(BitBucket *ptr){
     if(ptr == NULL){
         printf("######### ERROR: ptr is returning null");
@@ -95,8 +145,13 @@ unsigned char* bit_bucket_string(BitBucket *ptr){
     memcpy(raw,ptr->bucket, count);
     return raw;
 }
-/*
 
+/*
+  Copies 1 Byte of given string to BitBucket* memory at given position
+  @param BitBucket* pointer to the bit bucket to use, users
+  responsablity to ensure pointer is valid
+  @param char* pointer to location where the 1 Byte is located
+  @pos long long int the offset byte location in BitBucket to be modified
  */
 int bit_bucket_load_byte(BitBucket* ptr,char *buf, long long int pos){
     if(ptr == NULL){
@@ -110,6 +165,10 @@ int bit_bucket_load_byte(BitBucket* ptr,char *buf, long long int pos){
 }
 
 /*
+  Frees all the memory allocated by bit_bucket_create
+  Should be called before dereferencing BitBucket pointer
+  returned by bit_bucket_create
+  @param BitBucket* the pointer to be cleared
  */
 void bit_bucket_free(BitBucket *ptr){
     free(ptr->bucket);
