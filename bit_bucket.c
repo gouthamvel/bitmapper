@@ -57,7 +57,7 @@ void _bit_bucket_set_bit_to(BitBucket* ptr,long long int byte_part, int bit_part
 int bit_bucket_set_bit(BitBucket* ptr,long long int num){
     if(num > ptr->size) return 1;
     long long int byte_part=num/8, bit_part=num%8;
-    bit_bucket_set_bit_to(ptr, byte_part, bit_part, 1);
+    _bit_bucket_set_bit_to(ptr, byte_part, bit_part, 1);
     return 0;
 }
 

@@ -193,7 +193,7 @@ int dump_bucket_str_to_file(Bitmapper map, FILE* fp,long long int bkt_index){
 int dump_all_str_to_file(Bitmapper map, FILE* fp){
   long long int i;
   for(i=0;i<map.bkt_count;i++){
-    dump_bucket_str_to_file(map, i, fp);
+    dump_bucket_str_to_file(map, fp, i);
   }
   return 0;
 }
@@ -236,7 +236,21 @@ int load_str_file_to_bucket(Bitmapper map, FILE* fp,long long int bkt_index){
   @param long long int the index of bucket to load
  */
 int load_str_file(Bitmapper map, FILE* fp){
-
+  long long int size, i, bkt_no;
+  char buf[1];
+  for(bkt_no = 0;bkt_no < map.bkt_count; bkt_no++){
+    if(map.bkts[bkt_no] == NULL){
+      puts("creating bucket");
+      map.bkts[bkt_no] = (BitBucket*)create_bucket_for(map.bkts[bkt_no], map.bkt_size);
+    }
+    size = bit_bucket_size(map.bkts[bkt_no]);
+    for(i=0;i<size;i++){
+      fread(buf, 1, 1, fp);
+      if(buf == NULL) return 0;
+      bit_bucket_load_byte(map.bkts[bkt_no], buf, i);
+    }
+    return 0;
+  }
 }
 
 void test(){
