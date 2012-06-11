@@ -5,7 +5,7 @@
 #include "bit_bucket.c"
 
 /*
-   Bitmapper Object holds the buckets pointer and other info
+  Bitmapper Object holds the buckets pointer and other info
 */
 typedef struct Bitmapper{
   BitBucket** bkts;         /* pointer to list of pointers(count=bkt_count) */
@@ -16,10 +16,10 @@ typedef struct Bitmapper{
 } Bitmapper;
 
 /*
-   Initializes the Bitmapper. Buckets are not allocated space a this point.
-   They will be created on the fly.
-   @param int Number of digits from left(Most Significant Digits) to be used
-   for indexing 10^(10-index) will be the size of the bucket in bits.
+  Initializes the Bitmapper. Buckets are not allocated space a this point.
+  They will be created on the fly.
+  @param int Number of digits from left(Most Significant Digits) to be used
+  for indexing 10^(10-index) will be the size of the bucket in bits.
 */
 Bitmapper create_map(int index_len){
   unsigned long long int size = pow(10, index_len),i;
@@ -35,9 +35,9 @@ Bitmapper create_map(int index_len){
 }
 
 /*
-   Clears the memory allocated by create_map and create_bucket_for(if available)
-   @param Bitmapper the Bitmapper object to clear, only the buckets in
-   the bitmap obj and the buckets pointer will be freed
+  Clears the memory allocated by create_map and create_bucket_for(if available)
+  @param Bitmapper the Bitmapper object to clear, only the buckets in
+  the bitmap obj and the buckets pointer will be freed
 */
 void free_map(Bitmapper smap){
   unsigned long long int i;
@@ -93,7 +93,7 @@ int add_number(Bitmapper smap,unsigned long long int num, unsigned long long int
 
 /*
   A wrapper method which take a file and loads all the numbers in that
-  file into Bitmapper
+  file into Bitmapper. Works with DOS & unix files.
   @param Bitmapper the mapepr object to use
   @param FILE* the file pointer to the opened file
   @param unsigned long long int the length of index
@@ -112,7 +112,7 @@ int add_numbers_in_file(Bitmapper map,FILE *in, unsigned long long int index_len
 
 /*
   A wrapper method which take a file and removes all the numbers in that
-  file from Bitmapper if the number exist
+  file from Bitmapper if the number exist. Works with DOS & unix files.
   @param Bitmapper the mapepr object to use
   @param FILE* the file pointer to the opened file
   @param unsigned long long int the length of index
@@ -277,7 +277,6 @@ void test(){
   load_str_file_to_bucket(map, str_in,  934793);
   puts("dumping to file");
   dump_all_to_file(map, out);
-
 
   fclose(in);
   fclose(del);
