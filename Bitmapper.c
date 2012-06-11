@@ -175,12 +175,18 @@ int dump_all_to_file(Bitmapper map, FILE* fp){
   size of the bucket
  */
 int dump_bucket_str_to_file(Bitmapper map, FILE* fp,long long int bkt_index){
-  long long int size;
+  unsigned char* raw = (unsigned char*)malloc(map.bkt_size/8+1);
+  BitBucket* tmp;
   if(map.bkts[bkt_index] == NULL)
-    return 2;
-  unsigned char *str_start = bit_bucket_string(map.bkts[bkt_index]);
-  size = bit_bucket_size(map.bkts[bkt_index]);
-  fwrite(str_start, 1, size, fp);
+    tmp = bit_bucket_create(map.bkt_size);
+  else
+    tmp = map.bkts[bkt_index];
+  bit_bucket_string(tmp, raw);
+  fwrite(raw, 1, bit_bucket_size(tmp), fp);
+
+  if(map.bkts[bkt_index] == NULL)
+    bit_bucket_free(tmp);
+  free(raw);
   return 0;
 }
 
@@ -230,7 +236,6 @@ int load_str_file_to_bucket(Bitmapper map, FILE* fp,long long int bkt_index){
   in bits) will be ignored
   * the size of the bucket reperesented in file string must be equal
   to the size of bucket in Bitmapper.
-  the size of buckets should be equal
   @param Bitmapper the mapepr object to use
   @param FILE* the file pointer to the opened file
   @param long long int the index of bucket to load
@@ -240,6 +245,7 @@ int load_str_file(Bitmapper map, FILE* fp){
   char buf[1];
   for(bkt_no = 0;bkt_no < map.bkt_count; bkt_no++){
     if(map.bkts[bkt_no] == NULL){
+      // TODO
       puts("creating bucket");
       map.bkts[bkt_no] = (BitBucket*)create_bucket_for(map.bkts[bkt_no], map.bkt_size);
     }
@@ -264,8 +270,8 @@ void test(){
   Bitmapper map = create_map(index_len);
   add_numbers_in_file(map, in, index_len);
   //   remove_numbers_in_file(map, del, index_len);
-  dump_all_str_to_file( map, str_out);
-  //dump_bucket_str_to_file(map, str_out,  934793);
+  /* dump_all_str_to_file( map, str_out); */
+  dump_bucket_str_to_file(map, str_out,  934793);
   fclose(str_out);
   str_in = fopen("/tmp/ncpr/str_out.txt","r");
   load_str_file_to_bucket(map, str_in,  934793);

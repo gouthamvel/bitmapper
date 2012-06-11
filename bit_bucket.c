@@ -24,16 +24,6 @@ typedef struct BitBucket{
     long long int size;         /* size in bits as given */
 } BitBucket;
 
-void bit_bucket_free(BitBucket*);
-BitBucket* bit_bucket_create(long long int);
-int bit_bucket_set_bit(BitBucket*,long long int);
-int bit_bucket_clear_bit(BitBucket*,long long int);
-unsigned bit_bucket_get_bit(BitBucket*,long long int);
-void bit_bucket_reset(BitBucket*);
-unsigned char* bit_bucket_string(BitBucket*);
-long long int bit_bucket_size(BitBucket*);
-int bit_bucket_load_byte(BitBucket* ,char *, long long int );
-
 void _bit_bucket_set_bit_to(BitBucket* ptr,long long int byte_part, int bit_part, unsigned val){
     val = (val == 0) ? 0 : 1;
     switch(bit_part){
@@ -135,15 +125,13 @@ long long int bit_bucket_size(BitBucket *ptr){
   @param BitBucket* pointer to the bit bucket to use, users
   responsablity to ensure pointer is valid
  */
-unsigned char* bit_bucket_string(BitBucket *ptr){
+void bit_bucket_string(BitBucket *ptr, unsigned char* raw){
     if(ptr == NULL){
-        printf("######### ERROR: ptr is returning null");
-        return (unsigned char*)"null";
+      puts("######### ERROR: ptr is returning null");
     }
     long long int count = ptr->size/8+1, i;
-    unsigned char* raw = (unsigned char*)malloc(count);
+
     memcpy(raw,ptr->bucket, count);
-    return raw;
 }
 
 /*
