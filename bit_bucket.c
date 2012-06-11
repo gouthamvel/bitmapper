@@ -21,10 +21,10 @@ typedef struct ByteBits{
 */
 typedef struct BitBucket{
   ByteBits *bucket;
-  long long int size;         /* size in bits as given */
+  unsigned long long int size;         /* size in bits as given */
 } BitBucket;
 
-void _bit_bucket_set_bit_to(BitBucket* ptr,long long int byte_part, int bit_part, unsigned val){
+void _bit_bucket_set_bit_to(BitBucket* ptr,unsigned long long int byte_part, int bit_part, unsigned val){
   val = (val == 0) ? 0 : 1;
   switch(bit_part){
   case 0: ptr->bucket[byte_part].f0 = val;break;
@@ -44,9 +44,9 @@ void _bit_bucket_set_bit_to(BitBucket* ptr,long long int byte_part, int bit_part
   responsablity to ensure pointer is valid
   @param num the bit location
 */
-int bit_bucket_set_bit(BitBucket* ptr,long long int num){
+int bit_bucket_set_bit(BitBucket* ptr,unsigned long long int num){
   if(num > ptr->size) return 1;
-  long long int byte_part=num/8, bit_part=num%8;
+  unsigned long long int byte_part=num/8, bit_part=num%8;
   _bit_bucket_set_bit_to(ptr, byte_part, bit_part, 1);
   return 0;
 }
@@ -57,9 +57,9 @@ int bit_bucket_set_bit(BitBucket* ptr,long long int num){
   responsablity to ensure pointer is valid
   @param num the bit location
 */
-int bit_bucket_clear_bit(BitBucket* ptr,long long int num){
+int bit_bucket_clear_bit(BitBucket* ptr,unsigned long long int num){
   if(num > ptr->size) return 1;
-  long long int byte_part=num/8, bit_part=num%8;
+  unsigned long long int byte_part=num/8, bit_part=num%8;
   _bit_bucket_set_bit_to(ptr, byte_part, bit_part, 0);
   return 0;
 }
@@ -70,9 +70,9 @@ int bit_bucket_clear_bit(BitBucket* ptr,long long int num){
   responsablity to ensure pointer is valid
   @param num the bit location
 */
-unsigned bit_bucket_get_bit(BitBucket* ptr,long long int num){
+unsigned bit_bucket_get_bit(BitBucket* ptr,unsigned long long int num){
   if(num > ptr->size) return 2;
-  long long int byte_part=num/8, bit_part=num%8;
+  unsigned long long int byte_part=num/8, bit_part=num%8;
   switch(bit_part){
   case 0: return ptr->bucket[byte_part].f0;
   case 1: return ptr->bucket[byte_part].f1;
@@ -91,7 +91,7 @@ unsigned bit_bucket_get_bit(BitBucket* ptr,long long int num){
   responsablity to ensure pointer is valid
 */
 void bit_bucket_reset(BitBucket *ptr){
-  long long int count = ptr->size/8+1, i;
+  unsigned long long int count = ptr->size/8+1, i;
   for(i=0;i<count;i++){
     ptr->bucket[i] = (ByteBits){0,0,0,0,0,0,0,0};
   }
@@ -102,8 +102,8 @@ void bit_bucket_reset(BitBucket *ptr){
   memory. A reset on all bits is done after creating the memory.
   @param long long size Number of bits you want to allocate.
 */
-BitBucket* bit_bucket_create(long long int size){
-  long long int count = size/8 + 1;
+BitBucket* bit_bucket_create(unsigned long long int size){
+  unsigned long long int count = size/8 + 1;
   BitBucket *ptr = (BitBucket*)malloc(sizeof(BitBucket));
   ptr->size = size;
   ptr->bucket = (ByteBits*)malloc(count*sizeof(ByteBits));
@@ -116,7 +116,7 @@ BitBucket* bit_bucket_create(long long int size){
   @param BitBucket* pointer to the bit bucket to use, users
   responsablity to ensure pointer is valid
 */
-long long int bit_bucket_size(BitBucket *ptr){
+unsigned long long int bit_bucket_size(BitBucket *ptr){
   return ptr->size/8+1;
 }
 
@@ -129,7 +129,7 @@ void bit_bucket_string(BitBucket *ptr, unsigned char* raw){
   if(ptr == NULL){
     puts("######### ERROR: ptr is returning null");
   }
-  long long int count = ptr->size/8+1, i;
+  unsigned long long int count = ptr->size/8+1, i;
   memcpy(raw,ptr->bucket, count);
 }
 
@@ -138,14 +138,14 @@ void bit_bucket_string(BitBucket *ptr, unsigned char* raw){
   @param BitBucket* pointer to the bit bucket to use, users
   responsablity to ensure pointer is valid
   @param char* pointer to location where the 1 Byte is located
-  @pos long long int the offset byte location in BitBucket to be modified
+  @pos unsigned long long int the offset byte location in BitBucket to be modified
 */
-int bit_bucket_load_byte(BitBucket* ptr,char *buf, long long int pos){
+int bit_bucket_load_byte(BitBucket* ptr,char *buf, unsigned long long int pos){
   if(ptr == NULL){
     printf("####### ERROR: ptr is returning null");
     return 2;
   }
-  long long int count = ptr->size/8+1, i;
+  unsigned long long int count = ptr->size/8+1, i;
   if(count < pos) return 2;
   memcpy(ptr->bucket+pos, buf, 1);
   return 1;
