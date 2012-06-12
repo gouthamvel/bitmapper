@@ -1,11 +1,5 @@
 begin
   require 'bitmapper/bitmapper'
-catch LoadError
+rescue LoadError =>e
   puts "Error loading c binding for bitmapepr"
-end
-class Bitmapper
-
-  def self.hi
-    puts "Hello world!"
-  end
 end
