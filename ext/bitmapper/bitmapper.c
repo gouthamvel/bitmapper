@@ -3,6 +3,7 @@
 
 static VALUE rb_cBitmapper;
 static ID index_len;
+
 VALUE bm_init(VALUE self, VALUE len){
   Bitmapper* map;
   Data_Get_Struct(self, Bitmapper, map);
@@ -26,25 +27,24 @@ VALUE bm_alloc(VALUE self){
 
 VALUE bm_add_num(VALUE self, VALUE file_str){
   Bitmapper* map;
-  VALUE str, index_len;
-  int str_len;
-  char *str_p;
+  VALUE index_len;
   FILE *fp;
-  str = StringValue(file_str);
-  str_len = RSTRING_LEN(str);
-  str_p = RSTRING_PTR(str);
   index_len = rb_iv_get(self, "@index_len");
   Data_Get_Struct(self, Bitmapper, map);
-  fp = fopen(str_p, "r");
-  printf("%s-%i : %llu\n", str_p, str_len, NUM2LL(index_len));
+  fp = fopen(RSTRING_PTR(StringValue(file_str)), "r");
   add_numbers_in_file(map, fp, NUM2LL(index_len));
   fclose(fp);
   return self;
 }
 
-VALUE bm_dump_num(VALUE self, VALUE file){
+VALUE bm_dump_num(VALUE self, VALUE file_str){
   Bitmapper* map;
+  FILE *fp;
   Data_Get_Struct(self, Bitmapper, map);
+  fp = fopen(RSTRING_PTR(StringValue(file_str)), "w");
+  dump_all_to_file(map, fp);
+  fclose(fp);
+  return self;
 }
 
 void Init_bitmapper(){

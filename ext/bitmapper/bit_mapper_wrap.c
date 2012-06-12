@@ -4,7 +4,7 @@
 #include <math.h>
 
 #include "bit_mapper_wrap.h"
-#include "bit_bucket.c"
+/* #include "bit_bucket.c" */
 
 /*
    Creates empty Bitmapper*. Without BitBucket pointers.
@@ -65,7 +65,7 @@ BitBucket* create_bucket_for(BitBucket* bkt, unsigned long long int size){
  */
 int add_number(Bitmapper* map,unsigned long long int num, unsigned long long int bkt_index){
   if((map->bkts[bkt_index]) == NULL)
-    (map->bkts[bkt_index]) = (BitBucket*)create_bucket_for(map->bkts[bkt_index], map->bkt_size);
+    map->bkts[bkt_index] = (BitBucket*)create_bucket_for(map->bkts[bkt_index], map->bkt_size);
   if(bit_bucket_set_bit(map->bkts[bkt_index], num) != 0){
     puts("out of range");
     return 1;/* ERROR out of range */
@@ -267,7 +267,7 @@ void test(){
   add_numbers_in_file(map, in, index_len);
   /* in = fopen("test/data/1-add.txt","r"); */
   /* del = fopen("test/data/1-del.txt","r"); */
-  /* out = fopen("/tmp/ncpr/out.txt","w"); */
+  out = fopen("/tmp/ncpr/out2.txt","w");
   /* str_out = fopen("/tmp/ncpr/str_out.txt","w"); */
   /* add_numbers_in_file(map, in, index_len); */
   /* //   remove_numbers_in_file(map, del, index_len); */
@@ -277,12 +277,12 @@ void test(){
   /* str_in = fopen("/tmp/ncpr/str_out.txt","r"); */
   /* load_str_file_to_bucket(map, str_in,  934793); */
   /* puts("dumping to file"); */
-  /* dump_all_to_file(map, out); */
+  dump_all_to_file(map, out);
 
 
   fclose(in);
   /* fclose(del); */
-  /* fclose(out); */
+  fclose(out);
   /* fclose(str_in); */
   free_map(map);
 }
