@@ -2,6 +2,7 @@
     A Fast In-memory Bitmap tool.(For: Number(Integers) filtering).
 
 ## Usage
+currently supports max 10 digits numbers
 ### Creating the bitmap
 
     map = Bitmapper.new(3)
@@ -25,6 +26,13 @@ Apart from numbers the bitmap's binary sequence can be dumped to file.
 
 the bucket_index is the ID of the bucket to dump.
 dumping the whole bitmap to binary string is still pending.
+
+    map.set 9876543210
+    map.set "987654321"0
+    map.clear 98765432100
+    map.status? 987654321 # returns true/false
+
+raises TypeError, for number more than 10 digits
 
 ## Working
 Number is split in two based on the index length given at the begining.
