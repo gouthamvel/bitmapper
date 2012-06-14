@@ -180,11 +180,11 @@ void Init_bitmapper(){
   rb_define_alloc_func(rb_cBitmapper, bm_alloc);
   rb_define_method(rb_cBitmapper, "initialize", bm_init, 1);
   rb_define_method(rb_cBitmapper, "get_indexes", bm_get_indexes, 0);
-  rb_define_method(rb_cBitmapper, "add_from_file", bm_add_from_file, 1);
-  rb_define_method(rb_cBitmapper, "remove_from_file", bm_remove_from_file, 1);
-  rb_define_method(rb_cBitmapper, "dump_to_file", bm_dump_to_file, 1);
-  rb_define_method(rb_cBitmapper, "load_string_to_bucket", bm_load_str_to_bkt, 2);
-  rb_define_method(rb_cBitmapper, "dump_bucket_string", bm_dump_bkt_str, 2);
+  rb_define_method(rb_cBitmapper, "add", bm_add_from_file, 1);
+  rb_define_method(rb_cBitmapper, "remove", bm_remove_from_file, 1);
+  rb_define_method(rb_cBitmapper, "dump_to", bm_dump_to_file, 1);
+  rb_define_method(rb_cBitmapper, "load_from_str", bm_load_str_to_bkt, 2);
+  rb_define_method(rb_cBitmapper, "dump_to_str", bm_dump_bkt_str, 2);
 
   rb_define_method(rb_cBitmapper, "status?", bm_num_status, 1);
   rb_define_method(rb_cBitmapper, "set", bm_set, 1);

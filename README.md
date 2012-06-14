@@ -1,6 +1,9 @@
 # Bitmapper
     A Fast, In-memory, Bitmap tool.(For: Number(Integers) filtering).
 
+## performance
+    10-digit numbers
+
 ## Usage
 currently supports max 10 digits numbers
 ### Creating the bitmap
