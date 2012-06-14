@@ -58,24 +58,20 @@ VALUE bm_get_indexes(VALUE self){
 
 VALUE bm_add_from_file(VALUE self, VALUE file_str){
   Bitmapper* map;
-  VALUE index_len;
   FILE *fp;
-  index_len = rb_iv_get(self, "@index_len");
   Data_Get_Struct(self, Bitmapper, map);
   fp = fopen(RSTRING_PTR(StringValue(file_str)), "r");
-  add_numbers_in_file(map, fp, NUM2LL(index_len));
+  add_numbers_in_file(map, fp);
   fclose(fp);
   return self;
 }
 
 VALUE bm_remove_from_file(VALUE self, VALUE file_str){
   Bitmapper* map;
-  VALUE index_len;
   FILE *fp;
-  index_len = rb_iv_get(self, "@index_len");
   Data_Get_Struct(self, Bitmapper, map);
   fp = fopen(RSTRING_PTR(StringValue(file_str)), "r");
-  remove_numbers_in_file(map, fp, NUM2LL(index_len));
+  remove_numbers_in_file(map, fp);
   fclose(fp);
   return self;
 }

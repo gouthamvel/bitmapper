@@ -4,5 +4,4 @@
     ./programname
 
 ## TODO
-    * start binding to ruby.
-    * complete the wrapper.
+    * Check file_exist? for input files

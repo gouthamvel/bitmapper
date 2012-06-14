@@ -29,6 +29,7 @@ void allocate_map(Bitmapper* map, int index_len){
   }
   map->bkt_size = pow(10, 10 - index_len);
   map->bkt_count = size;
+  map->index_len = index_len;
   sprintf(map->fill_str, "%%llu%%0%illu\n",10-index_len);
 }
 
@@ -95,14 +96,13 @@ int add_number(Bitmapper* map,unsigned long long int num, unsigned long long int
   file into Bitmapper*. Works with DOS & unix files.
   @param Bitmapper* the mapepr object to use
   @param FILE* the file pointer to the opened file
-  @param unsigned long long int the length of index
 
   TODO: check for validity of number
  */
-int add_numbers_in_file(Bitmapper* map,FILE *in, unsigned long long int index_len){
+int add_numbers_in_file(Bitmapper* map,FILE *in){
   char scan_str[20];
-  char msisdn[15], index[index_len], rest_num[10-index_len];
-  sprintf(scan_str, "%%%is%%%is\n",index_len, 10-index_len);
+  char msisdn[15], index[map->index_len], rest_num[10-map->index_len];
+  sprintf(scan_str, "%%%is%%%is\n",map->index_len, 10-map->index_len);
   while(fgets(msisdn, 15, in)!=NULL){
     sscanf(msisdn,scan_str, index, rest_num);
     add_number(map, atoll(rest_num), atoll(index) );
@@ -114,14 +114,13 @@ int add_numbers_in_file(Bitmapper* map,FILE *in, unsigned long long int index_le
   file from Bitmapper* if the number exist. Works with DOS & unix files.
   @param Bitmapper* the mapepr object to use
   @param FILE* the file pointer to the opened file
-  @param unsigned long long int the length of index
 
   TODO: check for validity of number
  */
-int remove_numbers_in_file(Bitmapper* map,FILE *del, unsigned long long int index_len){
+int remove_numbers_in_file(Bitmapper* map,FILE *del){
   char scan_str[20];
-  char msisdn[15], index[index_len], rest_num[10-index_len];
-  sprintf(scan_str, "%%%is%%%is\n",index_len, 10-index_len);
+  char msisdn[15], index[map->index_len], rest_num[10-map->index_len];
+  sprintf(scan_str, "%%%is%%%is\n",map->index_len, 10-map->index_len);
   while(fgets(msisdn, 15, del)!=NULL){
     sscanf(msisdn,scan_str, index, rest_num);
     remove_number(map, atoll(rest_num), atoll(index) );
@@ -264,13 +263,13 @@ void test(){
   Bitmapper* map = create_map();
   allocate_map(map, index_len);
   in = fopen("/tmp/ncpr/out.txt","r");
-  add_numbers_in_file(map, in, index_len);
+  add_numbers_in_file(map, in);
   /* in = fopen("test/data/1-add.txt","r"); */
   /* del = fopen("test/data/1-del.txt","r"); */
   out = fopen("/tmp/ncpr/out2.txt","w");
   /* str_out = fopen("/tmp/ncpr/str_out.txt","w"); */
   /* add_numbers_in_file(map, in, index_len); */
-  /* //   remove_numbers_in_file(map, del, index_len); */
+  /* //   remove_numbers_in_file(map, del); */
   /* /\* dump_all_str_to_file( map, str_out); *\/ */
   /* dump_bucket_str_to_file(map, str_out,  934793); */
   /* fclose(str_out); */
