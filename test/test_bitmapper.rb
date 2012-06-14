@@ -109,7 +109,7 @@ class BitmapperTest < Test::Unit::TestCase
     first_10_num.each do |i|
       assert_equal @map.status?(i), true
     end
-    assert_equal @map.status?(@invalid_max_number), false
+    assert_raise(TypeError){@map.status?(@invalid_max_number)}
     assert_equal @map.status?(@invalid_char_number), false
   end
 
@@ -118,7 +118,7 @@ class BitmapperTest < Test::Unit::TestCase
       @map.set i
       assert_equal @map.status?(i), true
     end
-    assert_equal @map.set(@invalid_max_number), false
+    assert_raise(TypeError){@map.set(@invalid_max_number)}
     assert_equal @map.set(@invalid_char_number), false
   end
 
@@ -128,7 +128,7 @@ class BitmapperTest < Test::Unit::TestCase
       @map.clear i
       assert_equal @map.status?(i), false
     end
-    assert_equal @map.clear(@invalid_max_number), false
+    assert_raise(TypeError){@map.clear(@invalid_max_number)}
     assert_equal @map.clear(@invalid_char_number), false
   end
 

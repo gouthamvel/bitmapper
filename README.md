@@ -1,5 +1,5 @@
-## Bitmapper
-    A Fast In-memory Bitmap tool.(For: Number(Integers) filtering).
+# Bitmapper
+    A Fast, In-memory, Bitmap tool.(For: Number(Integers) filtering).
 
 ## Usage
 currently supports max 10 digits numbers
@@ -8,6 +8,8 @@ currently supports max 10 digits numbers
     map = Bitmapper.new(3)
 
 3 -> is the number of digits from left(most significant digits) which will be considered as index
+
+### operation on files
 
 In a nutshell giving a index ~= number of digits/2 will show good time and memory performance. See working to know more.
 
@@ -19,6 +21,7 @@ Similar operations
     map.remove("/tmp/file_with_numbers")
     map.dump_to("/tmp/file_name")
 
+### operation on binary strings
 Apart from numbers the bitmap's binary sequence can be dumped to file.
 
     map.dump_to_str("/tmp/file_name", <bucket_index>)
@@ -26,6 +29,8 @@ Apart from numbers the bitmap's binary sequence can be dumped to file.
 
 the bucket_index is the ID of the bucket to dump.
 dumping the whole bitmap to binary string is still pending.
+
+### operation on each number
 
     map.set 9876543210
     map.set "987654321"0
@@ -36,6 +41,7 @@ raises TypeError, for number more than 10 digits
 
 ## Working
 Number is split in two based on the index length given at the begining.
+
     Ex: 9876543210 -> 987:6543210
     987 -> this is the index of bucket in which rest of number is stored.
     6543210 -> this is the offset of the bit in 987 bucket.
