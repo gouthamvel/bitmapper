@@ -108,9 +108,33 @@ VALUE bm_dump_bkt_str(VALUE self, VALUE file_str, VALUE index){
 
 /*
    returns true if the provided number is present in bitmap or false
- */
+*/
 VALUE bm_num_status(VALUE self, VALUE num){
+  int status;
+  VALUE return_val, tmp;
+  Bitmapper* map;
 
+  Data_Get_Struct(self, Bitmapper, map);
+  switch(TYPE(num)){
+  case T_STRING:
+    tmp = rb_funcall(num, rb_intern("to_i"), 0); /* hack */
+    status = status_num(map, NUM2LL(tmp));
+    break;
+  case T_FIXNUM:
+  case T_BIGNUM:
+    status = status_num(map, NUM2LL(num));
+    break;
+  default:
+    printf("type identification failed in status check");
+  }
+  if(status ==1)
+    return_val = Qtrue;
+  else if(status == 0)
+    return_val = Qfalse;
+  else{
+    printf("status check failed\n");
+  }
+  return return_val;
 }
 
 void Init_bitmapper(){

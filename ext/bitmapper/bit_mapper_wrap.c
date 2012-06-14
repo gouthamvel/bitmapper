@@ -60,36 +60,91 @@ BitBucket* create_bucket_for(BitBucket* bkt, unsigned long long int size){
 /*
   Adds the given number to the bucket reperesented by the given index
   @param Bitmapper* the mapepr object to use
-  @param unsigned long long int the number to be added(if the number is greater
+  @param unsigned long long int the offset to be added(if the offset is greater
   than bucket size it is rejected)
   @param unsigned long long int the index of the bucket that will hold the number
  */
-int add_number(Bitmapper* map,unsigned long long int num, unsigned long long int bkt_index){
+int add_num_in_bkt(Bitmapper* map,unsigned long long int offset, unsigned long long int bkt_index){
   if((map->bkts[bkt_index]) == NULL)
     map->bkts[bkt_index] = (BitBucket*)create_bucket_for(map->bkts[bkt_index], map->bkt_size);
-  if(bit_bucket_set_bit(map->bkts[bkt_index], num) != 0){
+  if(bit_bucket_set_bit(map->bkts[bkt_index], offset) != 0){
     puts("out of range");
     return 1;/* ERROR out of range */
   }
   return 0;
 }
 
- /*
-   Removes the given number from the bucket reperesented by the given index
-   @param Bitmapper* the mapepr object to use
-   @param unsigned long long int the number to be Removed(if the number is greater
-   than bucket size it is rejected)
-   @param unsigned long long int the index of the bucket that would be hold the number
-  */
- int remove_number(Bitmapper* map,unsigned long long int num, unsigned long long int bkt_index){
-   if(map->bkts[bkt_index] == NULL)
-     return 0;
-   if(bit_bucket_clear_bit(map->bkts[bkt_index], num) != 0){
-     puts("out of range");
-     return 1;/* ERROR out of range */
-   }
-   return 0;
- }
+/*
+  Wrapper for add_num_in_bkt, splits the given number into index and
+  bit location
+  @param Bitmapper* the mapepr object to use
+  @param unsigned long long int the number
+ */
+int add_num(Bitmapper* map,unsigned long long int full_num){
+  unsigned long long int offset, bkt_index, div;
+  div = pow(10, map->index_len);
+  offset = full_num / div;
+  bkt_index = full_num % div;
+  return add_num_in_bkt(map, offset, bkt_index);
+}
+
+/*
+  Removes the given number from the bucket reperesented by the given index
+  @param Bitmapper* the mapepr object to use
+  @param unsigned long long int the offset to be Removed(if the offset is greater
+  than bucket size it is rejected)
+  @param unsigned long long int the index of the bucket that would be hold the number
+*/
+int remove_num_in_bkt(Bitmapper* map,unsigned long long int offset, unsigned long long int bkt_index){
+  if(map->bkts[bkt_index] == NULL)
+    return 0;
+  if(bit_bucket_clear_bit(map->bkts[bkt_index], offset) != 0){
+    puts("out of range");
+    return 1;/* ERROR out of range */
+  }
+  return 0;
+}
+
+/*
+  Wrapper for remove_num_in_bkt, splits the given number into index and
+  bit location
+  @param Bitmapper* the mapepr object to use
+  @param unsigned long long int the number
+*/
+int remove_num(Bitmapper* map,unsigned long long int full_num){
+  unsigned long long int offset, bkt_index, div;
+  div = pow(10, map->index_len);
+  offset = full_num / div;
+  bkt_index = full_num % div;
+  return remove_num_in_bkt(map, offset, bkt_index);
+}
+
+/*
+  returns the status of the given bit offset in the bucket reperesented by the given index
+  @param Bitmapper* the mapepr object to use
+  @param unsigned long long int the offset to be checked(if the number is greater
+  than bucket size it is rejected)
+  @param unsigned long long int the index of the bucket that would be hold the number
+*/
+int status_num_in_bkt(Bitmapper* map,unsigned long long int offset, unsigned long long int bkt_index){
+  if(map->bkts[bkt_index] == NULL)
+    return 0;
+  return bit_bucket_get_bit(map->bkts[bkt_index], offset);
+}
+
+/*
+  Wrapper for status_num_in_bkt, splits the given number into index and
+  bit location
+  @param Bitmapper* the mapepr object to use
+  @param unsigned long long int the number
+*/
+int status_num(Bitmapper* map,unsigned long long int full_num){
+  unsigned long long int offset, bkt_index, div;
+  div = pow(10, 10-map->index_len);
+  bkt_index = full_num / div;
+  offset = full_num % div;
+  return status_num_in_bkt(map, offset, bkt_index);
+}
 
 /*
   A wrapper method which take a file and loads all the numbers in that
@@ -105,7 +160,7 @@ int add_numbers_in_file(Bitmapper* map,FILE *in){
   sprintf(scan_str, "%%%is%%%is\n",map->index_len, 10-map->index_len);
   while(fgets(msisdn, 15, in)!=NULL){
     sscanf(msisdn,scan_str, index, rest_num);
-    add_number(map, atoll(rest_num), atoll(index) );
+    add_num_in_bkt(map, atoll(rest_num), atoll(index) );
   }
 }
 
@@ -123,7 +178,7 @@ int remove_numbers_in_file(Bitmapper* map,FILE *del){
   sprintf(scan_str, "%%%is%%%is\n",map->index_len, 10-map->index_len);
   while(fgets(msisdn, 15, del)!=NULL){
     sscanf(msisdn,scan_str, index, rest_num);
-    remove_number(map, atoll(rest_num), atoll(index) );
+    remove_num_in_bkt(map, atoll(rest_num), atoll(index) );
   }
 }
 

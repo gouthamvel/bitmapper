@@ -50,7 +50,7 @@ int bit_bucket_clear_bit(BitBucket* ptr,unsigned long long int num){
   responsablity to ensure pointer is valid
   @param num the bit location
 */
-unsigned bit_bucket_get_bit(BitBucket* ptr,unsigned long long int num){
+int bit_bucket_get_bit(BitBucket* ptr,unsigned long long int num){
   unsigned long long int byte_part=num/8, bit_part=num%8;
   if(num > ptr->size) return 2;
   switch(bit_part){

@@ -19,8 +19,12 @@ Bitmapper* create_map();
 void allocate_map(Bitmapper*, int);
 void free_map(Bitmapper*);
 BitBucket* create_bucket_for(BitBucket*, unsigned long long int);
-int add_number(Bitmapper* ,unsigned long long int, unsigned long long int);
-int remove_number(Bitmapper* ,unsigned long long int, unsigned long long int);
+int add_num_in_bkt(Bitmapper* ,unsigned long long int, unsigned long long int);
+int add_num(Bitmapper* ,unsigned long long int);
+int remove_num_in_bkt(Bitmapper* ,unsigned long long int, unsigned long long int);
+int remove_num(Bitmapper* ,unsigned long long int);
+int status_num_in_bkt(Bitmapper* ,unsigned long long int, unsigned long long int);
+int status_num(Bitmapper* ,unsigned long long int);
 
 int add_numbers_in_file(Bitmapper* ,FILE*);
 int remove_numbers_in_file(Bitmapper* ,FILE* );

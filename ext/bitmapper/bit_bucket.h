@@ -27,7 +27,7 @@ typedef struct BitBucket{
 void _bit_bucket_set_bit_to(BitBucket* ptr,unsigned long long int byte_part, int bit_part, unsigned val);
 int bit_bucket_set_bit(BitBucket* ptr,unsigned long long int num);
 int bit_bucket_clear_bit(BitBucket* ptr,unsigned long long int num);
-unsigned bit_bucket_get_bit(BitBucket* ptr,unsigned long long int num);
+int bit_bucket_get_bit(BitBucket* ptr,unsigned long long int num);
 void bit_bucket_reset(BitBucket *ptr);
 BitBucket* bit_bucket_create(unsigned long long int size);
 unsigned long long int bit_bucket_size(BitBucket *ptr);
