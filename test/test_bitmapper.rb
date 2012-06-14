@@ -46,11 +46,11 @@ class BitmapperTest < Test::Unit::TestCase
     f.close
   end
 
-  def init_billion_file
+  def init_million_file
     @assert_index_len = 1
     @index_len = 6
     f = open in_num_file, 'w'
-    10_000_0.times do |i|
+    10_000_00.times do |i|
       f.puts 9_000_000_000 + rand(i..100_000_000)
     end
     f.close
@@ -61,34 +61,76 @@ class BitmapperTest < Test::Unit::TestCase
     yield
     p "#{id} -- #{Time.now.to_f - t}"
   end
+  def setup
+    init_files2
+    @map = Bitmapper.new(@index_len)
+  end
+
+  def test_get_indexes
+    @map.add_from_file in_num_file
+    assert_equal @map.get_indexes.length, @assert_index_len
+  end
+
+  def test_add_from_file
+    @map.add_from_file in_num_file
+    numbers = `cat #{in_num_file}`.split("\n")
+    numbers.each do |i|
+      assert_equal @map.status?(i), true
+    end
+  end
+
+  def test_remove_from_file
+    @map.add_from_file in_num_file
+    @map.remove_from_file in_num_file
+    numbers = `cat #{in_num_file}`.split("\n")
+    numbers.each do |i|
+      assert_equal @map.status?(i), false
+    end
+  end
+
+  def test_dump_to_file
+    @map.add_from_file in_num_file
+    @map.dump_to_file out_num_file
+    assert_equal `bash -c "diff <(sort #{in_num_file}|uniq) <(sort #{out_num_file}|uniq)"`, ''
+  end
+
+  def test_dump_bucket_str
+
+  end
+
+  def test_dump_load_str_to_bucket
+  end
+
+  def test_status
+  end
+
+  def test_set_num
+  end
+
+  def test_clear_num
+  end
 
   def test_full_run
-    # init_files
-    init_billion_file
-    map = Bitmapper.new(@index_len)
-
     with_time_count('add') do
-      map.add_from_file in_num_file
+      @map.add_from_file in_num_file
     end
-
-    # map.dump_bucket_string out_str_file, map.get_indexes.first
-    # map.load_string_to_bucket out_str_file, map.get_indexes.first
+    @map.dump_bucket_string out_str_file, @map.get_indexes.first
+    @map.load_string_to_bucket out_str_file, @map.get_indexes.first
     with_time_count('dump') do
-      map.dump_to_file out_num_file
+      @map.dump_to_file out_num_file
     end
-
-    with_time_count('status') do
-      p map.status?(9_000_000_000)
-      p map.status?('9000000000')
+    first_10_num = `head -n10 #{in_num_file}`.split("\n")[0..10]
+    first_10_num.each do |i|
+      assert_equal @map.status?(i), true
     end
-    # assert_equal `bash -c "diff <(sort #{in_num_file}|uniq) <(sort #{out_num_file}|uniq)"`, ''
-    # assert_equal map.get_indexes.length, @assert_index_len
+    assert_equal `bash -c "diff <(sort #{in_num_file}|uniq) <(sort #{out_num_file}|uniq)"`, ''
+    assert_equal @map.get_indexes.length, @assert_index_len
 
-    # map.remove_from_file in_num_file
-    # map.dump_to_file out_num_file
+    @map.remove_from_file in_num_file
+    @map.dump_to_file out_num_file
 
-    # assert_not_equal `bash -c "diff <(sort #{in_num_file}|uniq) <(sort #{out_num_file}|uniq)"`,
-    ''
+    assert_not_equal `bash -c "diff <(sort #{in_num_file}|uniq) <(sort #{out_num_file}|uniq)"`,''
+
   end
 
 end
