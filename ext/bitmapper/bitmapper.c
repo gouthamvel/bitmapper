@@ -61,6 +61,7 @@ VALUE bm_add_from_file(VALUE self, VALUE file_str){
   FILE *fp;
   Data_Get_Struct(self, Bitmapper, map);
   fp = fopen(RSTRING_PTR(StringValue(file_str)), "r");
+  if(fp == NULL) rb_raise(rb_eIOError, "file counld not be opened");
   add_numbers_in_file(map, fp);
   fclose(fp);
   return self;
@@ -71,6 +72,7 @@ VALUE bm_remove_from_file(VALUE self, VALUE file_str){
   FILE *fp;
   Data_Get_Struct(self, Bitmapper, map);
   fp = fopen(RSTRING_PTR(StringValue(file_str)), "r");
+  if(fp == NULL) rb_raise(rb_eIOError, "file counld not be opened");
   remove_numbers_in_file(map, fp);
   fclose(fp);
   return self;
@@ -81,6 +83,7 @@ VALUE bm_dump_to_file(VALUE self, VALUE file_str){
   FILE *fp;
   Data_Get_Struct(self, Bitmapper, map);
   fp = fopen(RSTRING_PTR(StringValue(file_str)), "w");
+  if(fp == NULL) rb_raise(rb_eIOError, "file counld not be opened");
   dump_all_to_file(map, fp);
   fclose(fp);
   return self;
@@ -91,6 +94,7 @@ VALUE bm_load_str_to_bkt(VALUE self, VALUE file_str, VALUE index){
   FILE *fp;
   Data_Get_Struct(self, Bitmapper, map);
   fp = fopen(RSTRING_PTR(StringValue(file_str)), "r");
+  if(fp == NULL) rb_raise(rb_eIOError, "file counld not be opened");
   load_str_file_to_bucket(map, fp, NUM2LL(index));
   fclose(fp);
   return self;
@@ -101,6 +105,7 @@ VALUE bm_dump_bkt_str(VALUE self, VALUE file_str, VALUE index){
   FILE *fp;
   Data_Get_Struct(self, Bitmapper, map);
   fp = fopen(RSTRING_PTR(StringValue(file_str)), "w");
+  if(fp == NULL) rb_raise(rb_eIOError, "file counld not be opened");
   dump_bucket_str_to_file(map, fp, NUM2LL(index));
   fclose(fp);
   return self;
