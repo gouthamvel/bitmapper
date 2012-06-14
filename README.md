@@ -3,7 +3,18 @@
 
 ## performance
     10-digit numbers
+    For 4 Million numbers index 6, number series 1x to 9x
+        add: 2.3 sec
+        remove: 2.3 sec
+        dump_to: 3.9 sec
+        Memory usage: 22MB
+    For 100 Million numbers index 6, number series 1x - 9x
+        add: 62.1 sec
+        remove: 62.1 sec
+        dump_to: 68.1 sec
+        Memory usage: 190MB
 
+As the index value decreases the dump_to might take longer time, and the memory usage will increase. Considering completly random set of numbers.
 ## Usage
 currently supports max 10 digits numbers
 ### Creating the bitmap
