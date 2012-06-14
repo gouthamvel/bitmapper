@@ -62,7 +62,9 @@ class BitmapperTest < Test::Unit::TestCase
     p "#{id} -- #{Time.now.to_f - t}"
   end
   def setup
-    init_files2
+    (init_files2 and @create_file = true) unless @create_file
+    @invalid_max_number = 9_000_000_000_0
+    @invalid_char_number = '9_x00_000_000_0'
     @map = Bitmapper.new(@index_len)
   end
 
@@ -102,12 +104,32 @@ class BitmapperTest < Test::Unit::TestCase
   end
 
   def test_status
+    @map.add_from_file in_num_file
+    first_10_num = `head -n10 #{in_num_file}`.split("\n")[0..10]
+    first_10_num.each do |i|
+      assert_equal @map.status?(i), true
+    end
+    assert_equal @map.status?(@invalid_max_number), false
+    assert_equal @map.status?(@invalid_char_number), false
   end
 
   def test_set_num
+    [9_990_000_111, '9_990_000_111'].each do |i|
+      @map.set i
+      assert_equal @map.status?(i), true
+    end
+    assert_equal @map.set(@invalid_max_number), false
+    assert_equal @map.set(@invalid_char_number), false
   end
 
   def test_clear_num
+    [9_990_000_111, '9_990_000_111'].each{ |i| @map.set i}
+    [9_990_000_111, '9_990_000_111'].each do |i|
+      @map.clear i
+      assert_equal @map.status?(i), false
+    end
+    assert_equal @map.clear(@invalid_max_number), false
+    assert_equal @map.clear(@invalid_char_number), false
   end
 
   def test_full_run

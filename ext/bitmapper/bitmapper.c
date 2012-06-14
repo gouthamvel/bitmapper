@@ -107,34 +107,72 @@ VALUE bm_dump_bkt_str(VALUE self, VALUE file_str, VALUE index){
 }
 
 /*
-   returns true if the provided number is present in bitmap or false
-*/
-VALUE bm_num_status(VALUE self, VALUE num){
-  int status;
-  VALUE return_val, tmp;
-  Bitmapper* map;
-
-  Data_Get_Struct(self, Bitmapper, map);
+   helper method, works as to_i for various datatypes
+ */
+unsigned long long int bm_to_ll(VALUE num){
+  VALUE tmp;
   switch(TYPE(num)){
   case T_STRING:
     tmp = rb_funcall(num, rb_intern("to_i"), 0); /* hack */
-    status = status_num(map, NUM2LL(tmp));
-    break;
+    return NUM2LL(tmp);
   case T_FIXNUM:
   case T_BIGNUM:
-    status = status_num(map, NUM2LL(num));
-    break;
-  default:
-    printf("type identification failed in status check");
+    return NUM2LL(num);
   }
-  if(status ==1)
-    return_val = Qtrue;
+  return 0;
+}
+
+/*
+  adds the given number to bitmapper
+*/
+VALUE bm_set(VALUE self, VALUE num){
+  int status;
+  Bitmapper* map;
+
+  Data_Get_Struct(self, Bitmapper, map);
+  status = add_num(map, bm_to_ll(num));
+  if(status==0)
+    return (VALUE)Qtrue;
+  else
+    rb_raise(rb_eTypeError, "not valid number");
+  return (VALUE)Qfalse;
+}
+
+/*
+  removes the given number from bitmapper
+*/
+VALUE bm_clear(VALUE self, VALUE num){
+  int status;
+  Bitmapper* map;
+
+  Data_Get_Struct(self, Bitmapper, map);
+  status = remove_num(map, bm_to_ll(num));
+  if(status==0)
+    return (VALUE)Qtrue;
+  else
+    rb_raise(rb_eTypeError, "not valid number");
+  return (VALUE)Qfalse;
+}
+
+/*
+  returns true if the provided number is present in bitmap or returns
+  false
+*/
+VALUE bm_num_status(VALUE self, VALUE num){
+  int status;
+  VALUE return_val;
+  Bitmapper* map;
+
+  Data_Get_Struct(self, Bitmapper, map);
+  status = status_num(map, bm_to_ll(num));
+  if(status==1)
+    return (VALUE)Qtrue;
   else if(status == 0)
-    return_val = Qfalse;
-  else{
-    printf("status check failed\n");
-  }
-  return return_val;
+    return (VALUE)Qfalse;
+  else
+    rb_raise(rb_eTypeError, "not valid number");
+  return (VALUE)Qfalse;
+
 }
 
 void Init_bitmapper(){
@@ -149,10 +187,7 @@ void Init_bitmapper(){
   rb_define_method(rb_cBitmapper, "dump_bucket_string", bm_dump_bkt_str, 2);
 
   rb_define_method(rb_cBitmapper, "status?", bm_num_status, 1);
-  /* rb_define_method(rb_cBitmapper, "set", bm_set, 1); */
-  /* rb_define_method(rb_cBitmapper, "clear", bm_clear, 1); */
+  rb_define_method(rb_cBitmapper, "set", bm_set, 1);
+  rb_define_method(rb_cBitmapper, "clear", bm_clear, 1);
 
-  /* rb_define_method(rb_cBitmapper, "foo", bm_foo, 0); */
-  /* rb_define_method(rb_cBitmapper, "foo", bm_foo, 0); */
-  /* rb_define_method(rb_cBitmapper, "foo", bm_foo, 0); */
 }

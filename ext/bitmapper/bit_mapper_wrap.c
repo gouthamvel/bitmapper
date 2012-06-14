@@ -65,6 +65,7 @@ BitBucket* create_bucket_for(BitBucket* bkt, unsigned long long int size){
   @param unsigned long long int the index of the bucket that will hold the number
  */
 int add_num_in_bkt(Bitmapper* map,unsigned long long int offset, unsigned long long int bkt_index){
+  if(bkt_index > map->bkt_count) return 1;
   if((map->bkts[bkt_index]) == NULL)
     map->bkts[bkt_index] = (BitBucket*)create_bucket_for(map->bkts[bkt_index], map->bkt_size);
   if(bit_bucket_set_bit(map->bkts[bkt_index], offset) != 0){
@@ -82,9 +83,9 @@ int add_num_in_bkt(Bitmapper* map,unsigned long long int offset, unsigned long l
  */
 int add_num(Bitmapper* map,unsigned long long int full_num){
   unsigned long long int offset, bkt_index, div;
-  div = pow(10, map->index_len);
-  offset = full_num / div;
-  bkt_index = full_num % div;
+  div = pow(10, 10-map->index_len);
+  bkt_index = full_num / div;
+  offset = full_num % div;
   return add_num_in_bkt(map, offset, bkt_index);
 }
 
@@ -96,6 +97,7 @@ int add_num(Bitmapper* map,unsigned long long int full_num){
   @param unsigned long long int the index of the bucket that would be hold the number
 */
 int remove_num_in_bkt(Bitmapper* map,unsigned long long int offset, unsigned long long int bkt_index){
+  if(bkt_index > map->bkt_count) return 1;
   if(map->bkts[bkt_index] == NULL)
     return 0;
   if(bit_bucket_clear_bit(map->bkts[bkt_index], offset) != 0){
@@ -113,9 +115,9 @@ int remove_num_in_bkt(Bitmapper* map,unsigned long long int offset, unsigned lon
 */
 int remove_num(Bitmapper* map,unsigned long long int full_num){
   unsigned long long int offset, bkt_index, div;
-  div = pow(10, map->index_len);
-  offset = full_num / div;
-  bkt_index = full_num % div;
+  div = pow(10, 10-map->index_len);
+  bkt_index = full_num / div;
+  offset = full_num % div;
   return remove_num_in_bkt(map, offset, bkt_index);
 }
 
@@ -127,6 +129,7 @@ int remove_num(Bitmapper* map,unsigned long long int full_num){
   @param unsigned long long int the index of the bucket that would be hold the number
 */
 int status_num_in_bkt(Bitmapper* map,unsigned long long int offset, unsigned long long int bkt_index){
+  if(bkt_index > map->bkt_count) return 2;
   if(map->bkts[bkt_index] == NULL)
     return 0;
   return bit_bucket_get_bit(map->bkts[bkt_index], offset);
