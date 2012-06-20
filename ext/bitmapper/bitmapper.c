@@ -19,6 +19,21 @@ void bm_free(void *p){
   free_map((Bitmapper*)p);
 }
 
+/*
+   Frees memory. The amount of memory returned to OS depends on
+   compiler trip settings.
+ */
+VALUE bm_reset(VALUE self){
+  Bitmapper* map;
+  VALUE len;
+  Data_Get_Struct(self, Bitmapper, map);
+  free_map(map);
+  map = create_map();
+  len = rb_iv_get(self, "@index_len");
+  allocate_map(map, FIX2INT(len));
+  return self;
+}
+
 VALUE bm_alloc(VALUE self){
   Bitmapper* map;
   map = create_map();
@@ -184,6 +199,7 @@ void Init_bitmapper(){
   rb_cBitmapper = rb_define_class("Bitmapper", rb_cObject);
   rb_define_alloc_func(rb_cBitmapper, bm_alloc);
   rb_define_method(rb_cBitmapper, "initialize", bm_init, 1);
+  rb_define_method(rb_cBitmapper, "reset", bm_reset, 0);
   rb_define_method(rb_cBitmapper, "get_indexes", bm_get_indexes, 0);
   rb_define_method(rb_cBitmapper, "add", bm_add_from_file, 1);
   rb_define_method(rb_cBitmapper, "remove", bm_remove_from_file, 1);

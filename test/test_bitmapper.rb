@@ -153,6 +153,10 @@ class BitmapperTest < Test::Unit::TestCase
 
     assert_not_equal `bash -c "diff <(sort #{in_num_file}|uniq) <(sort #{out_num_file}|uniq)"`,''
 
+    @map.reset
+    @map.dump_to out_num_file
+    out_content = `cat #{out_num_file}`
+    assert_equal out_content, ''
   end
 
 end

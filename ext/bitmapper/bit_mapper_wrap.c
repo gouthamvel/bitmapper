@@ -4,7 +4,6 @@
 #include <math.h>
 
 #include "bit_mapper_wrap.h"
-/* #include "bit_bucket.c" */
 
 /*
    Creates empty Bitmapper*. Without BitBucket pointers.
@@ -41,7 +40,10 @@ void allocate_map(Bitmapper* map, int index_len){
 void free_map(Bitmapper* map){
   unsigned long long int i;
   for(i=0;i<map->bkt_count; i++){
-    if((map->bkts[i])!=NULL) bit_bucket_free(map->bkts[i]);
+    if((map->bkts[i])!=NULL){
+      bit_bucket_free(map->bkts[i]);
+      map->bkts[i] = NULL;
+    }
   }
   free(map->bkts);
   free(map);
@@ -313,37 +315,4 @@ int load_str_file(Bitmapper* map, FILE* fp){
     }
     return 0;
   }
-}
-
-void test(){
-  int index_len = 6;
-  FILE *in, *out, *del, *str_out, *str_in;
-  Bitmapper* map = create_map();
-  allocate_map(map, index_len);
-  in = fopen("/tmp/ncpr/out.txt","r");
-  add_numbers_in_file(map, in);
-  /* in = fopen("test/data/1-add.txt","r"); */
-  /* del = fopen("test/data/1-del.txt","r"); */
-  out = fopen("/tmp/ncpr/out2.txt","w");
-  /* str_out = fopen("/tmp/ncpr/str_out.txt","w"); */
-  /* add_numbers_in_file(map, in, index_len); */
-  /* //   remove_numbers_in_file(map, del); */
-  /* /\* dump_all_str_to_file( map, str_out); *\/ */
-  /* dump_bucket_str_to_file(map, str_out,  934793); */
-  /* fclose(str_out); */
-  /* str_in = fopen("/tmp/ncpr/str_out.txt","r"); */
-  /* load_str_file_to_bucket(map, str_in,  934793); */
-  /* puts("dumping to file"); */
-  dump_all_to_file(map, out);
-
-
-  fclose(in);
-  /* fclose(del); */
-  fclose(out);
-  /* fclose(str_in); */
-  free_map(map);
-}
-
-void main(){
-  test();
 }
