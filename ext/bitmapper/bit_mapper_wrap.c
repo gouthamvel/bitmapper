@@ -45,8 +45,8 @@ void free_map(Bitmapper* map){
       map->bkts[i] = NULL;
     }
   }
-  free(map->bkts);
-  free(map);
+  if(map->bkts != NULL) free(map->bkts);
+  if(map != NULL) free(map);
 }
 
 /*
@@ -244,7 +244,7 @@ int dump_bucket_str_to_file(Bitmapper* map, FILE* fp,unsigned long long int bkt_
 
   if(map->bkts[bkt_index] == NULL)
     bit_bucket_free(tmp);
-  free(raw);
+  if(raw != NULL) free(raw);
   return 0;
 }
 

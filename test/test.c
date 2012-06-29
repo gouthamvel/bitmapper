@@ -38,8 +38,8 @@ void test(){
   /* fclose(str_in); */
   free_map(map);
 
-  tmp = (int*)malloc(10000000*sizeof(int));
-  free(tmp);
+  /* tmp = (int*)malloc(10000000*sizeof(int)); */
+  /* free(tmp); */
   puts("DONE");
 }
 

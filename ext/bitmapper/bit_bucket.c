@@ -138,6 +138,6 @@ int bit_bucket_load_byte(BitBucket* ptr,char *buf, unsigned long long int pos){
   @param BitBucket* the pointer to be cleared
 */
 void bit_bucket_free(BitBucket *ptr){
-  free(ptr->bucket);
-  free(ptr);
+  if(ptr->bucket != NULL) free(ptr->bucket);
+  if(ptr != NULL) free(ptr);
 }
