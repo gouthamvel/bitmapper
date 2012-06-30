@@ -17,6 +17,7 @@ VALUE bm_init(VALUE self, VALUE len){
  */
 void bm_free(void *p){
   free_map((Bitmapper*)p);
+  if(p != NULL) free(p);
 }
 
 /*
@@ -28,7 +29,6 @@ VALUE bm_reset(VALUE self){
   VALUE len;
   Data_Get_Struct(self, Bitmapper, map);
   free_map(map);
-  map = create_map();
   len = rb_iv_get(self, "@index_len");
   allocate_map(map, FIX2INT(len));
   return self;

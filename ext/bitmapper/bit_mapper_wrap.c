@@ -46,7 +46,7 @@ void free_map(Bitmapper* map){
     }
   }
   if(map->bkts != NULL) free(map->bkts);
-  if(map != NULL) free(map);
+
 }
 
 /*
