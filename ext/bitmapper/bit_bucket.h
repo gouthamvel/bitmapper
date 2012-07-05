@@ -5,14 +5,14 @@
   this is the bitfield which takes 1 byte(8-bits) of space in memory
 */
 typedef struct ByteBits{
-  unsigned char  f0:1;
-  unsigned char  f1:1;
-  unsigned char  f2:1;
-  unsigned char  f3:1;
-  unsigned char  f4:1;
-  unsigned char  f5:1;
-  unsigned char  f6:1;
   unsigned char  f7:1;
+  unsigned char  f6:1;
+  unsigned char  f5:1;
+  unsigned char  f4:1;
+  unsigned char  f3:1;
+  unsigned char  f2:1;
+  unsigned char  f1:1;
+  unsigned char  f0:1;
 } ByteBits;
 
 /*
