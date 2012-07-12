@@ -10,7 +10,7 @@
 
 
 void test(){
-  int index_len = 1;
+  int index_len = 6;
   FILE *in, *out, *del, *str_out, *str_in;
   Bitmapper* map = create_map();
   int *tmp;

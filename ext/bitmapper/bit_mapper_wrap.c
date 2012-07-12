@@ -161,10 +161,11 @@ int status_num(Bitmapper* map,unsigned long long int full_num){
  */
 int add_numbers_in_file(Bitmapper* map,FILE *in){
   char scan_str[20];
-  char msisdn[15], index[map->index_len], rest_num[10-map->index_len];
+  char msisdn[15], index[map->index_len+1], rest_num[10-map->index_len+1];
   sprintf(scan_str, "%%%is%%%is\n",map->index_len, 10-map->index_len);
   while(fgets(msisdn, 15, in)!=NULL){
     sscanf(msisdn,scan_str, index, rest_num);
+    printf("%s %s\n", index, rest_num);
     add_num_in_bkt(map, atoll(rest_num), atoll(index) );
   }
 }
@@ -179,7 +180,7 @@ int add_numbers_in_file(Bitmapper* map,FILE *in){
  */
 int remove_numbers_in_file(Bitmapper* map,FILE *del){
   char scan_str[20];
-  char msisdn[15], index[map->index_len], rest_num[10-map->index_len];
+  char msisdn[15], index[map->index_len+1], rest_num[10-map->index_len+1];
   sprintf(scan_str, "%%%is%%%is\n",map->index_len, 10-map->index_len);
   while(fgets(msisdn, 15, del)!=NULL){
     sscanf(msisdn,scan_str, index, rest_num);

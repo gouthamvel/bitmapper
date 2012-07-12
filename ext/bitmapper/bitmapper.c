@@ -155,7 +155,6 @@ VALUE bm_set(VALUE self, VALUE num){
     return (VALUE)Qtrue;
   else
     rb_raise(rb_eTypeError, "not valid number");
-  return (VALUE)Qfalse;
 }
 
 /*
@@ -171,7 +170,6 @@ VALUE bm_clear(VALUE self, VALUE num){
     return (VALUE)Qtrue;
   else
     rb_raise(rb_eTypeError, "not valid number");
-  return (VALUE)Qfalse;
 }
 
 /*

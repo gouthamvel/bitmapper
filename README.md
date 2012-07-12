@@ -46,6 +46,9 @@ dumping the whole bitmap to binary string is still pending.
     map.clear 98765432100
     map.status? 987654321 # returns true/false
 
+    map.set "98765G`32100" # this is equivalent to map.set "98765G`32100".to_i => map.set 98765
+    map.status? "98765G`32100" # returns true
+
 raises TypeError, for number more than 10 digits
 
 ## Working

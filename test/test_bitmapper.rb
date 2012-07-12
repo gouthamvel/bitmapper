@@ -119,7 +119,6 @@ class BitmapperTest < Test::Unit::TestCase
       assert_equal @map.status?(i), true
     end
     assert_raise(TypeError){@map.set(@invalid_max_number)}
-    assert_equal @map.set(@invalid_char_number), false
   end
 
   def test_clear_num
@@ -129,7 +128,6 @@ class BitmapperTest < Test::Unit::TestCase
       assert_equal @map.status?(i), false
     end
     assert_raise(TypeError){@map.clear(@invalid_max_number)}
-    assert_equal @map.clear(@invalid_char_number), false
   end
 
   def test_full_run
