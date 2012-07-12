@@ -199,6 +199,7 @@ VALUE bm_set_filter(VALUE self, VALUE vCh){
   Bitmapper* map;
 
   Data_Get_Struct(self, Bitmapper, map);
+  vCh = rb_funcall(vCh, rb_intern("to_s"), 0); /* hack */
   ch = NUM2CHR(vCh);
   set_white_list_char(map, ch);
   return (VALUE)Qtrue;

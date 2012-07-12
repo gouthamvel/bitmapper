@@ -48,7 +48,6 @@ void free_map(Bitmapper* map){
   }
   if(map->white_list_char != NULL) free(map->white_list_char);
   if(map->bkts != NULL) free(map->bkts);
-
 }
 
 void set_white_list_char(Bitmapper* map, char c){
@@ -179,7 +178,6 @@ int add_numbers_in_file(Bitmapper* map,FILE *in){
   while(fgets(msisdn, 15, in)!=NULL){
     sscanf(msisdn,scan_str, index, rest_num);
     if(map->white_list_char !=NULL && strncmp(index, map->white_list_char, 1) != 0){
-      printf("skiping %s as not whitelisted\n", msisdn);
     }else{
       add_num_in_bkt(map, atoll(rest_num), atoll(index) );
     }
