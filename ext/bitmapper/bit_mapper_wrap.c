@@ -29,6 +29,7 @@ void allocate_map(Bitmapper* map, int index_len){
   map->bkt_size = pow(10, 10 - index_len);
   map->bkt_count = size;
   map->index_len = index_len;
+  map->white_list_char = NULL;
   sprintf(map->fill_str, "%%llu%%0%illu\n",10-index_len);
 }
 
@@ -45,8 +46,20 @@ void free_map(Bitmapper* map){
       map->bkts[i] = NULL;
     }
   }
+  if(map->white_list_char != NULL) free(map->white_list_char);
   if(map->bkts != NULL) free(map->bkts);
 
+}
+
+void set_white_list_char(Bitmapper* map, char c){
+  if(map->white_list_char !=NULL) free(map->white_list_char);
+  map->white_list_char = (char*)malloc(sizeof(char));
+  map->white_list_char[0] = c;
+}
+
+void clear_white_list_char(Bitmapper* map){
+  if(map->white_list_char !=NULL) free(map->white_list_char);
+  map->white_list_char = NULL;
 }
 
 /*
@@ -165,8 +178,11 @@ int add_numbers_in_file(Bitmapper* map,FILE *in){
   sprintf(scan_str, "%%%is%%%is\n",map->index_len, 10-map->index_len);
   while(fgets(msisdn, 15, in)!=NULL){
     sscanf(msisdn,scan_str, index, rest_num);
-    printf("%s %s\n", index, rest_num);
-    add_num_in_bkt(map, atoll(rest_num), atoll(index) );
+    if(map->white_list_char !=NULL && strncmp(index, map->white_list_char, 1) != 0){
+      printf("skiping %s as not whitelisted\n", msisdn);
+    }else{
+      add_num_in_bkt(map, atoll(rest_num), atoll(index) );
+    }
   }
 }
 

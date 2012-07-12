@@ -16,6 +16,8 @@ void test(){
   int *tmp;
   allocate_map(map, index_len);
   in = fopen("/tmp/ncpr/in.txt","r");
+  set_white_list_char(map, '9');
+  clear_white_list_char(map);
   add_numbers_in_file(map, in);
   /* in = fopen("test/data/1-add.txt","r"); */
   del = fopen("/tmp/ncpr/del.txt","r");

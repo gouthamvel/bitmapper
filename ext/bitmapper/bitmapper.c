@@ -190,7 +190,28 @@ VALUE bm_num_status(VALUE self, VALUE num){
   else
     rb_raise(rb_eTypeError, "not valid number");
   return (VALUE)Qfalse;
+}
 
+
+VALUE bm_set_filter(VALUE self, VALUE vCh){
+  int status;
+  char ch;
+  Bitmapper* map;
+
+  Data_Get_Struct(self, Bitmapper, map);
+  ch = NUM2CHR(vCh);
+  set_white_list_char(map, ch);
+  return (VALUE)Qtrue;
+}
+
+VALUE bm_clear_filter(VALUE self){
+  int status;
+  VALUE return_val;
+  Bitmapper* map;
+
+  Data_Get_Struct(self, Bitmapper, map);
+  clear_white_list_char(map);
+  return (VALUE)Qtrue;
 }
 
 void Init_bitmapper(){
@@ -202,11 +223,12 @@ void Init_bitmapper(){
   rb_define_method(rb_cBitmapper, "add", bm_add_from_file, 1);
   rb_define_method(rb_cBitmapper, "remove", bm_remove_from_file, 1);
   rb_define_method(rb_cBitmapper, "dump_to", bm_dump_to_file, 1);
+  rb_define_method(rb_cBitmapper, "set_filter", bm_set_filter, 1);
+  rb_define_method(rb_cBitmapper, "clear_filter", bm_clear_filter, 0);
   rb_define_method(rb_cBitmapper, "load_from_str", bm_load_str_to_bkt, 2);
   rb_define_method(rb_cBitmapper, "dump_to_str", bm_dump_bkt_str, 2);
 
   rb_define_method(rb_cBitmapper, "status?", bm_num_status, 1);
   rb_define_method(rb_cBitmapper, "set", bm_set, 1);
   rb_define_method(rb_cBitmapper, "clear", bm_clear, 1);
-
 }

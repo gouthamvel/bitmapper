@@ -12,6 +12,7 @@ typedef struct Bitmapper{
   unsigned long long int bkt_size;   /* size of each bucket in bits */
   /* the format specifier used to dump number to file from buckets */
   int index_len;
+  char *white_list_char;
   char fill_str[20];
 } Bitmapper;
 
@@ -19,6 +20,9 @@ Bitmapper* create_map();
 void allocate_map(Bitmapper*, int);
 void free_map(Bitmapper*);
 BitBucket* create_bucket_for(BitBucket*, unsigned long long int);
+void set_white_list_char(Bitmapper*, char);
+void clear_white_list_char(Bitmapper*);
+
 int add_num_in_bkt(Bitmapper* ,unsigned long long int, unsigned long long int);
 int add_num(Bitmapper* ,unsigned long long int);
 int remove_num_in_bkt(Bitmapper* ,unsigned long long int, unsigned long long int);
