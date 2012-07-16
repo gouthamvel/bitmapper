@@ -29,7 +29,8 @@ void allocate_map(Bitmapper* map, int index_len){
   map->bkt_size = pow(10, 10 - index_len);
   map->bkt_count = size;
   map->index_len = index_len;
-  map->white_list_char = NULL;
+  map->filter_enabled = 0;
+  map->filter_status = bit_bucket_create(size);
   sprintf(map->fill_str, "%%llu%%0%illu\n",10-index_len);
 }
 
@@ -46,19 +47,53 @@ void free_map(Bitmapper* map){
       map->bkts[i] = NULL;
     }
   }
-  if(map->white_list_char != NULL) free(map->white_list_char);
+  if(map->filter_status != NULL) bit_bucket_free(map->filter_status);
   if(map->bkts != NULL) free(map->bkts);
 }
 
-void set_white_list_char(Bitmapper* map, char c){
-  if(map->white_list_char !=NULL) free(map->white_list_char);
-  map->white_list_char = (char*)malloc(sizeof(char));
-  map->white_list_char[0] = c;
+/*
+   Enables filtering on given bucket, this is a whitelist filtering pattern.
+   @param BitBucket* the pointer to the bucket
+ */
+void enable_filter(Bitmapper* map){
+  map->filter_enabled = 1;
 }
 
-void clear_white_list_char(Bitmapper* map){
-  if(map->white_list_char !=NULL) free(map->white_list_char);
-  map->white_list_char = NULL;
+/*
+   Disble filtering on given bucket
+   @param BitBucket* the pointer to the bucket
+ */
+void disable_filter(Bitmapper* map){
+  map->filter_enabled = 0;
+}
+
+/*
+  Add the given number to whitelist
+  @param BitBucket* the pointer to the bucket
+  @param unsigned long long int the number to set
+ */
+int set_in_filter(Bitmapper* map, unsigned long long int number){
+  map->filter_enabled = 1;
+  return bit_bucket_set_bit(map->filter_status, number);
+}
+
+/*
+  Gives the status
+  @param BitBucket* the pointer to the bucket
+  @param unsigned long long int the number to set
+ */
+int status_for_filter(Bitmapper* map, unsigned long long int number){
+  return bit_bucket_get_bit(map->filter_status, number);
+}
+
+
+/*
+  Removes the given number from whitelist
+  @param BitBucket* the pointer to the bucket
+  @param unsigned long long int the number to set
+ */
+int clear_in_filter(Bitmapper* map, unsigned long long int number){
+  return bit_bucket_clear_bit(map->filter_status, number);
 }
 
 /*
@@ -73,6 +108,7 @@ BitBucket* create_bucket_for(BitBucket* bkt, unsigned long long int size){
 
 /*
   Adds the given number to the bucket reperesented by the given index
+  if filter is enabled and the index is set in filter_status
   @param Bitmapper* the mapepr object to use
   @param unsigned long long int the offset to be added(if the offset is greater
   than bucket size it is rejected)
@@ -80,6 +116,7 @@ BitBucket* create_bucket_for(BitBucket* bkt, unsigned long long int size){
  */
 int add_num_in_bkt(Bitmapper* map,unsigned long long int offset, unsigned long long int bkt_index){
   if(bkt_index > map->bkt_count) return 1;
+  if(map->filter_enabled == 1 && status_for_filter(map, bkt_index) == 0) return 0; /* ignore silently */
   if((map->bkts[bkt_index]) == NULL)
     map->bkts[bkt_index] = (BitBucket*)create_bucket_for(map->bkts[bkt_index], map->bkt_size);
   if(bit_bucket_set_bit(map->bkts[bkt_index], offset) != 0){
@@ -112,6 +149,7 @@ int add_num(Bitmapper* map,unsigned long long int full_num){
 */
 int remove_num_in_bkt(Bitmapper* map,unsigned long long int offset, unsigned long long int bkt_index){
   if(bkt_index > map->bkt_count) return 1;
+  if(map->filter_enabled == 1 && status_for_filter(map, bkt_index) == 0) return 0; /* ignore silently */
   if(map->bkts[bkt_index] == NULL)
     return 0;
   if(bit_bucket_clear_bit(map->bkts[bkt_index], offset) != 0){
@@ -177,10 +215,7 @@ int add_numbers_in_file(Bitmapper* map,FILE *in){
   sprintf(scan_str, "%%%is%%%is\n",map->index_len, 10-map->index_len);
   while(fgets(msisdn, 15, in)!=NULL){
     sscanf(msisdn,scan_str, index, rest_num);
-    if(map->white_list_char !=NULL && strncmp(index, map->white_list_char, 1) != 0){
-    }else{
-      add_num_in_bkt(map, atoll(rest_num), atoll(index) );
-    }
+    add_num_in_bkt(map, atoll(rest_num), atoll(index) );
   }
 }
 
@@ -267,7 +302,6 @@ int dump_bucket_str_to_file(Bitmapper* map, FILE* fp,unsigned long long int bkt_
   Dumps all bucket's bit values into the given file
   @param Bitmapper* the mapepr object to use
   @param FILE* the file pointer to the opened file
-  @param unsigned long long int the length of index
  */
 int dump_all_str_to_file(Bitmapper* map, FILE* fp){
   unsigned long long int i;

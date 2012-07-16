@@ -1,7 +1,7 @@
 Gem::Specification.new do |s|
   s.name        = 'bitmapper'
-  s.version     = '0.1.1'
-  s.date        = '2012-07-05'
+  s.version     = '0.1.2'
+  s.date        = '2012-07-16'
   s.summary     = "A fast, in-memory, bit map filter!"
   s.description = "A fast, in-memory, bit map filter!"
   s.authors     = ["Goutham Vel"]

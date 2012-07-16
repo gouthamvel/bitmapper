@@ -192,26 +192,47 @@ VALUE bm_num_status(VALUE self, VALUE num){
   return (VALUE)Qfalse;
 }
 
-
-VALUE bm_set_filter(VALUE self, VALUE vCh){
-  int status;
-  char ch;
+VALUE bm_enable_filter(VALUE self){
   Bitmapper* map;
-
   Data_Get_Struct(self, Bitmapper, map);
-  vCh = rb_funcall(vCh, rb_intern("to_s"), 0); /* hack */
-  ch = NUM2CHR(vCh);
-  set_white_list_char(map, ch);
+  enable_filter(map);
+  return self;
+}
+
+VALUE bm_disable_filter(VALUE self){
+  Bitmapper* map;
+  Data_Get_Struct(self, Bitmapper, map);
+  disable_filter(map);
+  return self;
+}
+
+VALUE bm_set_filters(VALUE self, VALUE val){
+  int i;
+  Bitmapper* map;
+  VALUE tmp;
+
+  if(TYPE(val) != T_ARRAY) rb_raise(rb_eRuntimeError, "Should be of type Array");
+  Data_Get_Struct(self, Bitmapper, map);
+  for(i=0; i< RARRAY_LEN(val); i++){
+    tmp = RARRAY_PTR(val)[i];
+    tmp = rb_funcall(tmp, rb_intern("to_s"), 0); /* hack */
+    set_in_filter(map, bm_to_ll(tmp));
+  }
   return (VALUE)Qtrue;
 }
 
-VALUE bm_clear_filter(VALUE self){
-  int status;
-  VALUE return_val;
+VALUE bm_clear_filters(VALUE self, VALUE val){
+  int i;
   Bitmapper* map;
+  VALUE tmp;
 
+  if(TYPE(val) != T_ARRAY) rb_raise(rb_eRuntimeError, "Should be of type Array");
   Data_Get_Struct(self, Bitmapper, map);
-  clear_white_list_char(map);
+  for(i=0; i< RARRAY_LEN(val); i++){
+    tmp = RARRAY_PTR(val)[i];
+    tmp = rb_funcall(tmp, rb_intern("to_s"), 0); /* hack */
+    clear_in_filter(map, bm_to_ll(tmp));
+  }
   return (VALUE)Qtrue;
 }
 
@@ -224,8 +245,12 @@ void Init_bitmapper(){
   rb_define_method(rb_cBitmapper, "add", bm_add_from_file, 1);
   rb_define_method(rb_cBitmapper, "remove", bm_remove_from_file, 1);
   rb_define_method(rb_cBitmapper, "dump_to", bm_dump_to_file, 1);
-  rb_define_method(rb_cBitmapper, "set_filter", bm_set_filter, 1);
-  rb_define_method(rb_cBitmapper, "clear_filter", bm_clear_filter, 0);
+
+  rb_define_method(rb_cBitmapper, "enable_filter", bm_enable_filter, 0);
+  rb_define_method(rb_cBitmapper, "disable_filter", bm_disable_filter, 0);
+  rb_define_method(rb_cBitmapper, "set_filters", bm_set_filters, 1);
+  rb_define_method(rb_cBitmapper, "clear_filters", bm_clear_filters, 1);
+
   rb_define_method(rb_cBitmapper, "load_from_str", bm_load_str_to_bkt, 2);
   rb_define_method(rb_cBitmapper, "dump_to_str", bm_dump_bkt_str, 2);
 

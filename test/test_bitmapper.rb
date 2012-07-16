@@ -31,6 +31,8 @@ class BitmapperTest < Test::Unit::TestCase
         f.puts base*1_000_000_000 + i
       end
     end
+    @filter_array = (9*10**(@index_len-1)..10**@index_len).to_a
+    @post_filter_count = 1000
     f.close
   end
 
@@ -64,7 +66,7 @@ class BitmapperTest < Test::Unit::TestCase
   def setup
     (init_files and @create_file = true) unless @create_file
     @invalid_max_number = 9_000_000_000_0
-    @invalid_char_number = '9_x00_000_000_0'
+    @invalid_char_number = '9x00000000'
     @map = Bitmapper.new(@index_len)
   end
 
@@ -157,4 +159,10 @@ class BitmapperTest < Test::Unit::TestCase
     assert_equal out_content, ''
   end
 
+  def test_filters
+    @map.set_filters(@filter_array)
+    @map.add in_num_file
+    @map.dump_to out_num_file
+    assert_equal `wc -l #{out_num_file}|cut -d' ' -f1`.to_i, @post_filter_count
+   end
 end
