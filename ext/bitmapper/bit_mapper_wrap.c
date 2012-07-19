@@ -4,6 +4,7 @@
 #include <math.h>
 
 #include "bit_mapper_wrap.h"
+#include "helper.h"
 
 /*
    Creates empty Bitmapper*. Without BitBucket pointers.
@@ -274,13 +275,10 @@ int dump_all_to_file(Bitmapper* map, FILE* fp){
 }
 
 /*
-  Dumps the bucket's(if available) bit values into the given file
+  Dumps the bucket's(if not available create empty) bit values into the given file
   @param Bitmapper* the mapepr object to use
   @param FILE* the file pointer to the opened file
   @param unsigned long long int index to the bucket to consider
-
-  TODO: If the bucket doesn't exist, dump empty string equal to the
-  size of the bucket
  */
 int dump_bucket_str_to_file(Bitmapper* map, FILE* fp,unsigned long long int bkt_index){
   unsigned char* raw = (unsigned char*)malloc(map->bkt_size/8+1);
@@ -295,6 +293,42 @@ int dump_bucket_str_to_file(Bitmapper* map, FILE* fp,unsigned long long int bkt_
   if(map->bkts[bkt_index] == NULL)
     bit_bucket_free(tmp);
   if(raw != NULL) free(raw);
+  return 0;
+}
+/*
+  Dumps a range of bucket's(in sequence) bit values into the given file
+  @param Bitmapper* the mapepr object to use
+  @param FILE* the file pointer to the opened file
+  @param unsigned long long int start index to the bucket to consider(inclusive)
+  @param unsigned long long int end index to the bucket to consider(inclusive)
+ */
+int dump_bucket_range_str_to_file(Bitmapper* map, FILE* fp,
+                            unsigned long long int start,
+                            unsigned long long int end){
+  BitBucket* tmp;
+  unsigned long long int i;
+  FileBuffer buf;
+  if(map->bkt_count<=end) return 1;
+  buf.buffer = '\0';
+  buf.buff_fill_count = 0;
+  buf.string = (unsigned char*)malloc(map->bkt_size/8+1);
+  buf.str_length = map->bkt_size;
+
+  for(i=start; i<=end ;i++){
+    if(map->bkts[i] == NULL)
+      tmp = bit_bucket_create(map->bkt_size);
+    else
+      tmp = map->bkts[i];
+
+    bit_bucket_string(tmp, buf.string);
+    append_to_file(fp, buf);
+
+    if(map->bkts[i] == NULL)
+      bit_bucket_free(tmp);
+  }
+  if(buf.string != NULL) free(buf.string);
+  buf.str_length = 0;
+  append_to_file(fp, buf);
   return 0;
 }
 

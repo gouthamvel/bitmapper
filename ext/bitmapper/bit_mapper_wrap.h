@@ -1,4 +1,5 @@
 #include "bit_bucket.h"
+#include "helper.h"
 
 #ifndef BIT_MAPPER_WRAP
 #define BIT_MAPPER_WRAP
@@ -24,7 +25,7 @@ BitBucket* create_bucket_for(BitBucket*, unsigned long long int);
 
 void enable_filter(Bitmapper*);
 void disable_filter(Bitmapper*);
-int set_for_filter(Bitmapper* , unsigned long long int);
+int set_in_filter(Bitmapper* , unsigned long long int);
 int status_for_filter(Bitmapper*, unsigned long long int );
 int clear_in_filter(Bitmapper*, unsigned long long int);
 
@@ -41,7 +42,10 @@ int dump_bucket_to_file(Bitmapper*, FILE* , unsigned long long int);
 int dump_all_to_file(Bitmapper* , FILE* );
 
 int dump_bucket_str_to_file(Bitmapper* , FILE* ,unsigned long long int );
+int dump_bucket_range_str_to_file(Bitmapper*, FILE* , unsigned long long int ,
+                                  unsigned long long int );
 int dump_all_str_to_file(Bitmapper* , FILE*);
+
 int load_str_file_to_bucket(Bitmapper* , FILE* ,unsigned long long int);
 int load_str_file(Bitmapper* , FILE*);
 

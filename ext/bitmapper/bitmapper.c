@@ -115,6 +115,17 @@ VALUE bm_load_str_to_bkt(VALUE self, VALUE file_str, VALUE index){
   return self;
 }
 
+VALUE bm_dump_range_bkt_str(VALUE self, VALUE file_str, VALUE start, VALUE end){
+  Bitmapper* map;
+  FILE *fp;
+  Data_Get_Struct(self, Bitmapper, map);
+  fp = fopen(RSTRING_PTR(StringValue(file_str)), "w");
+  if(fp == NULL) rb_raise(rb_eIOError, "file counld not be opened");
+  dump_bucket_range_str_to_file(map, fp, NUM2LL(start), NUM2LL(end));
+  fclose(fp);
+  return self;
+}
+
 VALUE bm_dump_bkt_str(VALUE self, VALUE file_str, VALUE index){
   Bitmapper* map;
   FILE *fp;
@@ -252,6 +263,7 @@ void Init_bitmapper(){
   rb_define_method(rb_cBitmapper, "clear_filters", bm_clear_filters, 1);
 
   rb_define_method(rb_cBitmapper, "load_from_str", bm_load_str_to_bkt, 2);
+  rb_define_method(rb_cBitmapper, "dump_range_to_str", bm_dump_range_bkt_str, 3);
   rb_define_method(rb_cBitmapper, "dump_to_str", bm_dump_bkt_str, 2);
 
   rb_define_method(rb_cBitmapper, "status?", bm_num_status, 1);
